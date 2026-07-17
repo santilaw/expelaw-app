@@ -290,7 +290,6 @@ body {
   font-size: 1.1rem;
   line-height: 1.8;
   color: var(--color-text-main);
-  white-space: pre-wrap; /* Preserves newlines from JSON */
 }
 
 /* Animations */

@@ -383,8 +383,10 @@ body {
 }
 
 .html-content img {
-  max-width: 100%;
-  height: auto;
-  display: block; /* Ensures no weird spacing under the image */
-  margin: 8px 0;
+  max-width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 16px auto !important; /* Centered vertically and horizontally */
+  object-fit: contain; /* Prevents aspect ratio distortion */
+  border-radius: 4px;
 }

@@ -68,9 +68,9 @@ export default function ContentArea({ item, onSave, onDelete }) {
         node.setAttribute('style', `${BASE_STYLE} color: #0563C1; text-decoration: underline;`);
         break;
       case 'img':
-        // Eliminar imágenes base64 (logos) al copiar - no son parte del contenido legal
-        node.remove();
-        return;
+        // Mantener las imágenes (pantallazos) al copiar
+        node.setAttribute('style', 'max-width: 100%; height: auto;');
+        break;
       default:
         node.setAttribute('style', `${BASE_STYLE}`);
         break;

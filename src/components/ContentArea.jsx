@@ -4,11 +4,13 @@ import { Copy, Check, FileText, Edit2, Save, X, Trash2 } from 'lucide-react';
 export default function ContentArea({ item, onSave, onDelete }) {
   const [copied, setCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
   const editorRef = useRef(null);
 
   useEffect(() => {
     setCopied(false);
     setIsEditing(false);
+    if (item) setEditTitle(item.title);
   }, [item]);
 
   // Estilos base que Word entiende perfectamente
@@ -126,7 +128,7 @@ td, th { border: 1px solid black; }
 
   const handleSave = () => {
     if (editorRef.current && item) {
-      onSave({ ...item, content: editorRef.current.innerHTML });
+      onSave({ ...item, title: editTitle, content: editorRef.current.innerHTML }, item.title);
       setIsEditing(false);
     }
   };
@@ -156,8 +158,19 @@ td, th { border: 1px solid black; }
   return (
     <div className="main-content">
       <div className="content-card" key={item.title}>
-        <div className="content-header" style={{ flexWrap: 'wrap', gap: '16px' }}>
-          <h2 className="content-title">{item.title}</h2>
+        <div className="content-header" style={{ flexWrap: 'wrap', gap: '16px', alignItems: 'center' }}>
+          {isEditing ? (
+            <input 
+              type="text" 
+              value={editTitle} 
+              onChange={(e) => setEditTitle(e.target.value)}
+              className="content-title"
+              style={{ flex: 1, border: '2px solid var(--color-accent)', borderRadius: '4px', padding: '4px 8px', fontSize: '1.5rem', outline: 'none' }}
+              placeholder="Título del párrafo"
+            />
+          ) : (
+            <h2 className="content-title">{item.title}</h2>
+          )}
           <div style={{ display: 'flex', gap: '12px' }}>
             {isEditing ? (
               <>

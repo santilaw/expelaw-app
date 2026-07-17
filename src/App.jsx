@@ -39,11 +39,29 @@ function App() {
     }
   }, []);
 
-  const handleSaveItem = (updatedItem) => {
-    const newData = data.map(item => item.title === updatedItem.title ? updatedItem : item);
+  const handleSaveItem = (updatedItem, originalTitle) => {
+    let newData;
+    const isExisting = data.some(item => item.title === originalTitle);
+    
+    if (isExisting) {
+      newData = data.map(item => item.title === originalTitle ? updatedItem : item);
+    } else {
+      newData = [updatedItem, ...data];
+    }
+    
     setData(newData);
     localStorage.setItem('parrafosData', JSON.stringify(newData));
     setSelectedItem(updatedItem);
+  };
+
+  const handleAddNewItem = () => {
+    const newItem = {
+      title: `Nuevo Párrafo ${Date.now().toString().slice(-4)}`,
+      content: '<p>Pega aquí el contenido desde Word...</p>'
+    };
+    // Añadimos al principio para que sea visible
+    setData([newItem, ...data]);
+    setSelectedItem(newItem);
   };
 
   const handleDeleteItem = (itemToDelete) => {
@@ -59,6 +77,7 @@ function App() {
         data={data} 
         selectedItem={selectedItem} 
         onSelectItem={setSelectedItem} 
+        onAddNewItem={handleAddNewItem}
       />
       <ContentArea item={selectedItem} onSave={handleSaveItem} onDelete={handleDeleteItem} />
     </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Folder, FolderOpen, FileText, ChevronRight, ChevronDown, Search, Scale } from 'lucide-react';
+import { Folder, FolderOpen, FileText, ChevronRight, ChevronDown, Search, Scale, Plus } from 'lucide-react';
 
-export default function Sidebar({ data, selectedItem, onSelectItem }) {
+export default function Sidebar({ data, selectedItem, onSelectItem, onAddNewItem }) {
   const [isRootExpanded, setIsRootExpanded] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -19,11 +19,24 @@ export default function Sidebar({ data, selectedItem, onSelectItem }) {
 
   return (
     <div className="sidebar">
-      <div className="sidebar-header">
+      <div className="sidebar-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>
           <Scale size={24} color="var(--color-accent)" />
           ExpeLaw
         </h1>
+        <button 
+          onClick={onAddNewItem}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '4px',
+            backgroundColor: 'var(--color-accent)', color: 'white',
+            border: 'none', borderRadius: '4px', padding: '6px 10px',
+            cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+          }}
+          title="Añadir nuevo párrafo"
+        >
+          <Plus size={16} /> Nuevo
+        </button>
       </div>
 
       {/* Barra de búsqueda */}

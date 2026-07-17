@@ -15,7 +15,7 @@ export default function Sidebar({ data, selectedItem, onSelectItem, onAddNewItem
     tempDiv.innerHTML = item.content;
     const contentMatch = tempDiv.innerText.toLowerCase().includes(term);
     return titleMatch || contentMatch;
-  });
+  }).sort((a, b) => a.title.localeCompare(b.title));
 
   return (
     <div className="sidebar">

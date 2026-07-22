@@ -143,6 +143,58 @@ td, th { border: 1px solid black; }
     }
   };
 
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const html = e.clipboardData.getData('text/html');
+    const text = e.clipboardData.getData('text/plain');
+
+    if (html) {
+      // Limpiar basura inicial de Word (comentarios y namespaces)
+      let clean = html.replace(/<!--[\s\S]*?-->/g, '')
+                      .replace(/<o:p>\s*<\/o:p>/g, '')
+                      .replace(/<o:p>([\s\S]*?)<\/o:p>/g, '$1')
+                      .replace(/<\/?\w+:[^>]*>/g, ''); // Quita etiquetas como <w:sdt>
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(clean, 'text/html');
+
+      // Eliminar etiquetas no deseadas
+      const unwanted = doc.querySelectorAll('style, script, meta, link, title, xml');
+      unwanted.forEach(el => el.remove());
+
+      // Limpiar atributos para dejar HTML semántico pero conservando estilos y estructura
+      const allEls = doc.body.querySelectorAll('*');
+      
+      for (let i = allEls.length - 1; i >= 0; i--) {
+        const el = allEls[i];
+        // Conservar atributos clave para la estructura visual y tablas
+        const keepAttrs = ['src', 'href', 'alt', 'rowspan', 'colspan', 'style', 'width', 'height', 'border', 'cellpadding', 'cellspacing', 'valign', 'align'];
+        const attrsToRemove = [];
+        
+        for (let j = 0; j < el.attributes.length; j++) {
+          if (!keepAttrs.includes(el.attributes[j].name.toLowerCase())) {
+            attrsToRemove.push(el.attributes[j].name);
+          }
+        }
+        
+        attrsToRemove.forEach(a => el.removeAttribute(a));
+        
+        // Desenvolver (unwrap) spans vacíos o divs innecesarios que Word agrega (solo si no tienen estilo)
+        if ((el.tagName === 'SPAN' || el.tagName === 'DIV') && el.attributes.length === 0) {
+          const fragment = document.createDocumentFragment();
+          while(el.firstChild) {
+            fragment.appendChild(el.firstChild);
+          }
+          el.parentNode.replaceChild(fragment, el);
+        }
+      }
+
+      document.execCommand('insertHTML', false, doc.body.innerHTML);
+    } else if (text) {
+      document.execCommand('insertText', false, text);
+    }
+  };
+
   if (!item) {
     return (
       <div className="main-content">
@@ -230,6 +282,7 @@ td, th { border: 1px solid black; }
                 contentEditable={true}
                 suppressContentEditableWarning={true}
                 dangerouslySetInnerHTML={{ __html: item.content }}
+                onPaste={handlePaste}
                 style={{ 
                   border: '2px dashed var(--color-accent)', 
                   padding: '20px', 
